@@ -8,6 +8,7 @@ import Results from './pages/Results';
 import Members from './pages/Members';
 import Endurance from './pages/Endurance';
 import Globe from './pages/Globe';
+import Profile from './pages/Profile';
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
           <Route path="/members" element={<Members />} />
           <Route path="/globe" element={<Globe />} />
           <Route path="/endurance" element={<Endurance />} />
+          <Route path="/profile" element={<Profile />} />
         </Routes>
       </Layout>
     </Router>

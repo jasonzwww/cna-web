@@ -5,7 +5,8 @@ export class GeminiService {
   private ai: GoogleGenAI;
 
   constructor() {
-    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
+    // Fix: Initialize GoogleGenAI using the mandatory named parameter and direct environment variable access
+    this.ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
   }
 
   async getTrackGuide(trackName: string, carType: string) {

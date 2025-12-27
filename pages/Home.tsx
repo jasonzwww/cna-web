@@ -227,7 +227,7 @@ const Home: React.FC = () => {
                   </div>
                 </div>
 
-                <Link to="/schedule" className="inline-flex items-center gap-3 text-[#eb1923] font-black uppercase italic text-xs tracking-[0.3em] hover:text-[#ff1e26] transition-all group/link bg-[#eb1923]/5 px-8 py-4 rounded-full border border-[#eb1923]/10">
+                <Link to="/series/gt3" className="inline-flex items-center gap-3 text-[#eb1923] font-black uppercase italic text-xs tracking-[0.3em] hover:text-[#ff1e26] transition-all group/link bg-[#eb1923]/5 px-8 py-4 rounded-full border border-[#eb1923]/10">
                   Enter Season <ChevronRight size={18} className="group-hover/link:translate-x-2 transition-transform" />
                 </Link>
               </div>
@@ -260,7 +260,7 @@ const Home: React.FC = () => {
                   </div>
                 </div>
 
-                <Link to="/schedule" className="inline-flex items-center gap-3 text-blue-500 font-black uppercase italic text-xs tracking-[0.3em] hover:text-blue-400 transition-all group/link bg-blue-600/5 px-8 py-4 rounded-full border border-blue-600/10">
+                <Link to="/series/rookies" className="inline-flex items-center gap-3 text-blue-500 font-black uppercase italic text-xs tracking-[0.3em] hover:text-blue-400 transition-all group/link bg-blue-600/5 px-8 py-4 rounded-full border border-blue-600/10">
                   Claim Seat <ChevronRight size={18} className="group-hover/link:translate-x-2 transition-transform" />
                 </Link>
               </div>

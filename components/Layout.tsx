@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Trophy, Calendar, Users, Home, ShieldAlert, Flag, Globe, LogIn, UserCircle, Settings, LogOut } from 'lucide-react';
+import { Trophy, Calendar, Users, Home, ShieldAlert, Flag, Globe, LogIn, UserCircle, Settings, LogOut, ChevronDown, Zap } from 'lucide-react';
 import LoginModal from './LoginModal';
 import { UserProfile } from '../types';
 
@@ -44,6 +44,15 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
   const navItems = [
     { name: 'Home', path: '/', icon: <Home size={18} /> },
+    { 
+      name: 'Series', 
+      path: '#', 
+      icon: <Flag size={18} />,
+      children: [
+        { name: 'GT3 Open', path: '/series/gt3', icon: <Zap size={14} /> },
+        { name: 'Rookies', path: '/series/rookies', icon: <Trophy size={14} /> }
+      ]
+    },
     { name: 'Schedule', path: '/schedule', icon: <Calendar size={18} /> },
     { name: 'Results', path: '/results', icon: <Trophy size={18} /> },
     { name: 'Members', path: '/members', icon: <Users size={18} /> },
@@ -72,18 +81,41 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
             {/* Main Nav */}
             <div className="hidden md:flex items-center space-x-2">
               {navItems.map((item) => (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center gap-2.5 px-6 py-3 rounded-full text-[10px] uppercase font-black tracking-widest transition-all ${
-                    location.pathname === item.path
-                      ? 'text-[#eb1923] bg-[#eb1923]/5 border border-[#eb1923]/10'
-                      : 'text-gray-500 hover:text-white hover:bg-white/5 border border-transparent'
-                  }`}
-                >
-                  {item.icon}
-                  {item.name}
-                </Link>
+                item.children ? (
+                  <div key={item.name} className="relative group">
+                    <button 
+                      className={`flex items-center gap-2.5 px-6 py-3 rounded-full text-[10px] uppercase font-black tracking-widest transition-all text-gray-500 hover:text-white hover:bg-white/5 border border-transparent`}
+                    >
+                      {item.icon}
+                      {item.name}
+                      <ChevronDown size={14} />
+                    </button>
+                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#0a0d14] border border-white/10 rounded-2xl p-2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all translate-y-2 group-hover:translate-y-0 shadow-2xl z-[60]">
+                      {item.children.map(child => (
+                        <Link 
+                          key={child.path} 
+                          to={child.path}
+                          className="flex items-center gap-3 w-full text-left px-5 py-3 text-[10px] font-black uppercase text-gray-300 hover:bg-white/5 rounded-xl transition-colors tracking-widest italic hover:text-[#eb1923]"
+                        >
+                          {child.icon} {child.name}
+                        </Link>
+                      ))}
+                    </div>
+                  </div>
+                ) : (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center gap-2.5 px-6 py-3 rounded-full text-[10px] uppercase font-black tracking-widest transition-all ${
+                      location.pathname === item.path
+                        ? 'text-[#eb1923] bg-[#eb1923]/5 border border-[#eb1923]/10'
+                        : 'text-gray-500 hover:text-white hover:bg-white/5 border border-transparent'
+                    }`}
+                  >
+                    {item.icon}
+                    {item.name}
+                  </Link>
+                )
               ))}
             </div>
 
@@ -142,7 +174,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
 
       {/* Mobile Nav */}
       <div className="md:hidden fixed bottom-0 left-0 right-0 bg-[#05070a]/95 backdrop-blur-3xl border-t border-white/5 z-50 flex justify-around p-4 shadow-[0_-10px_30px_rgba(0,0,0,0.5)]">
-        {navItems.map((item) => (
+        {navItems.filter(item => !item.children).map((item) => (
           <Link
             key={item.path}
             to={item.path}

@@ -1,46 +1,88 @@
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { UserProfile, Race, DetailedRace } from '../types';
+import { UserProfile } from '../types';
 import { SCHEDULE, PAST_RESULTS } from '../constants';
-import { UserCircle, Trophy, Activity, MapPin, Map, Flag, Timer, ChevronRight, Save, Navigation, ShieldCheck } from 'lucide-react';
+import { Activity, MapPin, Flag, ChevronRight, Save, Navigation, ShieldCheck, Trophy, Lock } from 'lucide-react';
+import LoginModal from '../components/LoginModal';
+
+const MOCK_GUEST_USER: UserProfile = {
+  cust_id: 0,
+  display_name: "Guest Driver",
+  licenses: {
+    sports_car: { category: "Sports Car", irating: 0, safety_rating: "R 2.50", license_level: "R", color: "#555" },
+    formula: { category: "Formula", irating: 0, safety_rating: "R 2.50", license_level: "R", color: "#555" }
+  },
+  last_sync: new Date().toISOString(),
+  location: { lat: 0, lng: 0, city: "Unknown", country: "Global" },
+  cna_points: 0,
+  joined_race_ids: []
+};
 
 const Profile: React.FC = () => {
-  const navigate = useNavigate();
-  const [user, setUser] = useState<UserProfile | null>(null);
+  const [user, setUser] = useState<UserProfile>(MOCK_GUEST_USER);
+  const [isGuest, setIsGuest] = useState(true);
   const [isEditingLocation, setIsEditingLocation] = useState(false);
   const [editLoc, setEditLoc] = useState({ city: '', country: '', lat: 0, lng: 0 });
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('cna_driver');
     if (saved) {
       const u = JSON.parse(saved);
       setUser(u);
+      setIsGuest(false);
       if (u.location) {
         setEditLoc(u.location);
       }
     } else {
-      navigate('/');
+      setIsGuest(true);
+      setUser(MOCK_GUEST_USER);
     }
-  }, [navigate]);
-
-  const joinedRaces = user ? SCHEDULE.filter(r => user.joined_race_ids.includes(r.id)) : [];
+  }, []);
 
   const handleUpdateLocation = () => {
-    if (!user) return;
+    if (isGuest) return;
     const updatedUser = { ...user, location: editLoc };
     setUser(updatedUser);
     localStorage.setItem('cna_driver', JSON.stringify(updatedUser));
     setIsEditingLocation(false);
-    // Notify other components
     window.dispatchEvent(new Event('profileUpdate'));
   };
 
-  if (!user) return null;
+  const handleLoginSuccess = (profile: UserProfile) => {
+    setUser(profile);
+    setIsGuest(false);
+    if (profile.location) setEditLoc(profile.location);
+    localStorage.setItem('cna_driver', JSON.stringify(profile));
+  };
+
+  const joinedRaces = user.joined_race_ids ? SCHEDULE.filter(r => user.joined_race_ids.includes(r.id)) : [];
 
   return (
-    <div className="py-12 px-4 max-w-7xl mx-auto pb-32">
-      <header className="mb-16 flex flex-col md:flex-row gap-12 items-start md:items-center">
+    <div className="relative py-12 px-4 max-w-7xl mx-auto pb-32">
+      {/* Guest Overlay */}
+      {isGuest && (
+        <div className="fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
+           <div className="bg-[#0a0d14] border border-[#eb1923]/30 rounded-3xl p-8 max-w-lg text-center shadow-[0_0_50px_rgba(235,25,35,0.2)]">
+              <div className="w-20 h-20 bg-neutral-900 rounded-full flex items-center justify-center mx-auto mb-6 border border-white/5">
+                <Lock size={32} className="text-[#eb1923]" />
+              </div>
+              <h2 className="text-3xl font-oswald font-bold text-white uppercase italic mb-4">Driver Profile Locked</h2>
+              <p className="text-gray-500 mb-8 text-sm leading-relaxed">
+                Connect your iRacing account to access your personalized career statistics, CNA league points, and race history.
+              </p>
+              <button 
+                onClick={() => setIsLoginOpen(true)}
+                className="bg-[#eb1923] hover:bg-[#ff1e26] text-white px-8 py-4 rounded-full font-bold uppercase tracking-widest text-xs transition-all w-full shadow-lg"
+              >
+                Connect iRacing Account
+              </button>
+           </div>
+        </div>
+      )}
+
+      {/* Header */}
+      <header className={`mb-16 flex flex-col md:flex-row gap-12 items-start md:items-center ${isGuest ? 'blur-sm select-none' : ''}`}>
         <div className="relative group">
           <div className="w-32 h-32 md:w-48 md:h-48 rounded-full bg-[#eb1923] flex items-center justify-center text-white font-black text-4xl md:text-7xl shadow-[0_0_50px_rgba(235,25,35,0.3)] border-4 border-white/10 italic">
             {user.display_name.charAt(0)}
@@ -79,7 +121,7 @@ const Profile: React.FC = () => {
               ) : (
                 <span className="text-sm font-bold uppercase tracking-widest flex items-center gap-3">
                   {user.location?.city}, {user.location?.country}
-                  <button onClick={() => setIsEditingLocation(true)} className="text-[9px] text-gray-600 hover:text-white underline">Edit</button>
+                  {!isGuest && <button onClick={() => setIsEditingLocation(true)} className="text-[9px] text-gray-600 hover:text-white underline">Edit</button>}
                 </span>
               )}
             </div>
@@ -92,7 +134,7 @@ const Profile: React.FC = () => {
         </div>
       </header>
 
-      <div className="grid lg:grid-cols-3 gap-12">
+      <div className={`grid lg:grid-cols-3 gap-12 ${isGuest ? 'blur-sm select-none pointer-events-none' : ''}`}>
         {/* Stats Column */}
         <div className="space-y-8">
            <div className="flex items-center gap-3 mb-2">
@@ -142,7 +184,7 @@ const Profile: React.FC = () => {
                    .flatMap(r => r.races)
                    .find(dr => dr.track_name.includes(race.track.split(' ')[0]));
                  
-                 const userResult = detailedResult?.results.find(r => r.name.toLowerCase().includes(user.display_name.toLowerCase()) || r.name === "Handa Yang"); // mock match
+                 const userResult = detailedResult?.results.find(r => r.name.toLowerCase().includes(user.display_name.toLowerCase()) || r.name === "Handa Yang");
 
                  return (
                    <div key={race.id} className="bg-[#0a0d14] border border-white/5 rounded-[2rem] p-8 flex flex-col md:flex-row justify-between items-start md:items-center gap-6 hover:border-white/10 transition-all group">
@@ -187,6 +229,12 @@ const Profile: React.FC = () => {
            </div>
         </div>
       </div>
+      
+      <LoginModal 
+        isOpen={isLoginOpen} 
+        onClose={() => setIsLoginOpen(false)} 
+        onSuccess={handleLoginSuccess}
+      />
     </div>
   );
 };

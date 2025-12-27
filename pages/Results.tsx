@@ -9,9 +9,7 @@ import {
   ChevronLeft, 
   Calendar, 
   Activity,
-  ExternalLink,
   ChevronRight,
-  Medal,
   Timer,
   Zap,
   Thermometer,
@@ -22,6 +20,8 @@ import {
   Clock
 } from 'lucide-react';
 
+// --- Components ---
+
 const OfficialRaceReport: React.FC<{ race: DetailedRace; onBack: () => void }> = ({ race, onBack }) => {
   return (
     <div className="fixed inset-0 z-[100] bg-[#05060a] overflow-y-auto px-4 py-8 md:p-12 animate-in fade-in zoom-in-95 duration-300">
@@ -30,7 +30,7 @@ const OfficialRaceReport: React.FC<{ race: DetailedRace; onBack: () => void }> =
         {/* Close Button */}
         <button 
           onClick={onBack}
-          className="absolute top-8 right-8 md:top-12 md:right-12 w-12 h-12 bg-white/5 hover:bg-red-600 transition-all rounded-full flex items-center justify-center text-white border border-white/10 group"
+          className="absolute top-8 right-8 md:top-12 md:right-12 w-12 h-12 bg-white/5 hover:bg-red-600 transition-all rounded-full flex items-center justify-center text-white border border-white/10 group z-50"
         >
           <X size={24} className="group-hover:scale-110" />
         </button>
@@ -185,6 +185,39 @@ const SeasonCard: React.FC<{ res: Result; onSelect: (res: Result) => void }> = (
   );
 };
 
+const QuickResultCard: React.FC<{ race: DetailedRace; onClick: () => void }> = ({ race, onClick }) => {
+  const winner = race.results[0];
+  return (
+    <button 
+      onClick={onClick}
+      className="text-left w-full bg-neutral-900/50 hover:bg-neutral-800 border border-white/5 hover:border-red-600/30 rounded-2xl p-6 transition-all group flex flex-col md:flex-row gap-6 items-start md:items-center"
+    >
+      <div className="flex-grow">
+        <div className="flex items-center gap-3 mb-2">
+           <span className="text-[9px] font-black bg-white/5 text-gray-400 px-2 py-0.5 rounded uppercase tracking-widest">{new Date(race.start_time).toLocaleDateString()}</span>
+           <span className="text-[9px] font-black bg-red-600/10 text-red-500 px-2 py-0.5 rounded uppercase tracking-widest">Official</span>
+        </div>
+        <h4 className="text-xl font-oswald font-bold text-white uppercase italic tracking-tighter group-hover:text-red-500 transition-colors">{race.track_name}</h4>
+      </div>
+      
+      <div className="flex items-center gap-8 border-t md:border-t-0 md:border-l border-white/5 pt-4 md:pt-0 md:pl-8 w-full md:w-auto">
+         <div>
+            <span className="block text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">Winner</span>
+            <div className="flex items-center gap-2">
+               <Trophy size={14} className="text-yellow-500" />
+               <span className="text-sm font-bold text-white">{winner.name}</span>
+            </div>
+         </div>
+         <div>
+            <span className="block text-[9px] text-gray-500 uppercase font-black tracking-widest mb-1">SOF</span>
+            <span className="text-xl font-oswald font-bold text-white italic">{race.strength_of_field}</span>
+         </div>
+         <ChevronRight size={18} className="text-gray-600 group-hover:text-white transition-colors ml-auto md:ml-0" />
+      </div>
+    </button>
+  );
+};
+
 const Results: React.FC = () => {
   const [selectedSeason, setSelectedSeason] = useState<Result | null>(null);
   const [activeRace, setActiveRace] = useState<DetailedRace | null>(null);
@@ -197,6 +230,11 @@ const Results: React.FC = () => {
     if (!selectedSeason) return [];
     return SCHEDULE.filter(r => r.series === selectedSeason.series);
   }, [selectedSeason]);
+
+  // Aggregate all completed races for quick view
+  const allDetailedRaces = useMemo(() => {
+    return PAST_RESULTS.flatMap(season => season.races).sort((a, b) => new Date(b.start_time).getTime() - new Date(a.start_time).getTime());
+  }, []);
 
   if (activeRace) {
     return <OfficialRaceReport race={activeRace} onBack={() => setActiveRace(null)} />;
@@ -359,6 +397,19 @@ const Results: React.FC = () => {
           The official competitive history of CNA Racing. Monitor live battles and explore past seasons.
         </p>
       </header>
+
+      {/* Quick Access to Recent Results */}
+      <section className="mb-20">
+         <div className="flex items-center gap-4 mb-8">
+            <Clock size={20} className="text-[#eb1923]" />
+            <h2 className="text-xl font-oswald font-bold uppercase tracking-widest text-white italic">Latest Official Reports</h2>
+         </div>
+         <div className="grid lg:grid-cols-3 gap-6">
+            {allDetailedRaces.slice(0, 3).map((race) => (
+               <QuickResultCard key={race.subsession_id} race={race} onClick={() => setActiveRace(race)} />
+            ))}
+         </div>
+      </section>
 
       {/* Active Campaigns */}
       <section className="mb-20">

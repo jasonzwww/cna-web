@@ -113,4 +113,9 @@ export interface EnduranceTeam {
   owner: string;
   members: string[];
   maxSlots: number;
+  // New fields
+  goal: 'podium' | 'fun';
+  eventDate: string; // ISO date string for start
+  eventLength: number; // in hours
+  availability: Record<number, string[]>; // Key is hour index (0 to eventLength), Value is array of member IDs/Names
 }

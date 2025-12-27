@@ -66,7 +66,8 @@ const OfficialRaceReport: React.FC<{ race: DetailedRace; onBack: () => void }> =
                 </div>
               </div>
             </div>
-          </header>
+          </div>
+        </header>
 
         {/* Results Table */}
         <div className="overflow-x-auto custom-scrollbar">

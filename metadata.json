@@ -2,8 +2,6 @@
   "name": "CNA Racing League Portal",
   "description": "A comprehensive hub for the CNA iRacing league, featuring schedules for GT3 and Rookie series, season results, member directories, and an interactive endurance team builder.",
   "requestFramePermissions": [
-    "camera",
-    "microphone",
     "geolocation"
   ]
 }

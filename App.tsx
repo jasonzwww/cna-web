@@ -11,6 +11,7 @@ import Globe from './pages/Globe';
 import Profile from './pages/Profile';
 import SeriesGT3 from './pages/SeriesGT3';
 import SeriesRookies from './pages/SeriesRookies';
+import Standings from './pages/Standings';
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
           <Route path="/" element={<Home />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/results" element={<Results />} />
+          <Route path="/standings" element={<Standings />} />
           <Route path="/members" element={<Members />} />
           <Route path="/globe" element={<Globe />} />
           <Route path="/endurance" element={<Endurance />} />

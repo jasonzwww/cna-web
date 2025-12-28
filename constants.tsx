@@ -1,5 +1,7 @@
 
 import { RaceSeries, Race, Result, Member, DetailedRace } from './types';
+import { EVENT_82056585 } from './data/results_82056585';
+import { parseIRacingResult } from './utils/resultParser';
 
 // Raw data provided by user
 export const rookieData = {
@@ -64,23 +66,8 @@ export const SCHEDULE: Race[] = [
   }))
 ];
 
-const IMOLA_RESULT: DetailedRace = {
-  subsession_id: 82056585,
-  track_name: "Autodromo Internazionale Enzo e Dino Ferrari",
-  track_config: "Grand Prix",
-  start_time: "2025-12-21T03:59:11Z",
-  strength_of_field: 1759,
-  temp: 26,
-  humidity: 45,
-  results: [
-    { pos: 1, startPos: 4, name: "Songtao Bai", car: "Aston Martin Vantage GT3 EVO", interval: "LEADER", bestLap: "1:42.922", incidents: 9, points: 25, status: "Running" },
-    { pos: 2, startPos: 3, name: "Handa Yang", car: "Porsche 911 GT3 R (992)", interval: "+9.901s", bestLap: "1:43.272", incidents: 13, points: 18, status: "Running" },
-    { pos: 3, startPos: 5, name: "Yao Jianzhong", car: "Ferrari 296 GT3", interval: "+27.776s", bestLap: "1:43.643", incidents: 5, points: 15, status: "Running" },
-    { pos: 4, startPos: 1, name: "Suncheng Shi", car: "Chevrolet Corvette Z06 GT3.R", interval: "+42.911s", bestLap: "1:43.473", incidents: 19, points: 12, status: "Running" },
-    { pos: 5, startPos: 8, name: "Li Xina", car: "Porsche 911 GT3 R (992)", interval: "+63.031s", bestLap: "1:44.618", incidents: 16, points: 10, status: "Running" },
-    { pos: 6, startPos: 7, name: "Shuming Shi", car: "Porsche 911 GT3 R (992)", interval: "+72.780s", bestLap: "1:43.917", incidents: 19, points: 8, status: "Running" },
-  ]
-};
+// Use Parser for actual JSON data
+const IMOLA_RESULT = parseIRacingResult(EVENT_82056585);
 
 const SILVERSTONE_RESULT: DetailedRace = {
   subsession_id: 82199042,
@@ -118,14 +105,9 @@ export const PAST_RESULTS: Result[] = [
     seasonName: 'Season 26S1', 
     series: RaceSeries.GT3_OPEN, 
     status: 'active',
-    champion: { name: 'Handa Yang', points: 120, wins: 2, car: 'Porsche 911 GT3 R' },
+    champion: { name: 'TBD', points: 0, wins: 0, car: 'Various' },
     races: [IMOLA_RESULT, SILVERSTONE_RESULT, LEMANS_RESULT],
-    standings: [
-      { pos: 1, name: 'Handa Yang', points: 61, wins: 1, podiums: 3, car: 'Porsche 911 GT3 R' },
-      { pos: 2, name: 'Songtao Bai', points: 58, wins: 1, podiums: 3, car: 'Aston Martin Vantage' },
-      { pos: 3, name: 'Ethan Wang', points: 40, wins: 1, podiums: 2, car: 'BMW M4 GT3' },
-      { pos: 4, name: 'Yao Jianzhong', points: 15, wins: 0, podiums: 1, car: 'Ferrari 296 GT3' },
-    ]
+    standings: [] // Populated dynamically in Standings.tsx
   },
   { 
     id: 's26s1-rookie-active',

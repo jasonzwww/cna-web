@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Trophy, Calendar, Users, Home, ShieldAlert, Flag, Globe, LogIn, UserCircle, Settings, LogOut, ChevronDown, Zap } from 'lucide-react';
+import { Trophy, Calendar, Users, Home, ShieldAlert, Flag, Globe, LogIn, Settings, LogOut, ChevronDown, Zap, BarChart3 } from 'lucide-react';
 import LoginModal from './LoginModal';
 import { UserProfile } from '../types';
 
@@ -53,6 +53,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         { name: 'Rookies', path: '/series/rookies', icon: <Trophy size={14} /> }
       ]
     },
+    { name: 'Standings', path: '/standings', icon: <BarChart3 size={18} /> },
     { name: 'Schedule', path: '/schedule', icon: <Calendar size={18} /> },
     { name: 'Results', path: '/results', icon: <Trophy size={18} /> },
     { name: 'Members', path: '/members', icon: <Users size={18} /> },
@@ -90,16 +91,19 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       {item.name}
                       <ChevronDown size={14} />
                     </button>
-                    <div className="absolute top-full left-0 mt-2 w-56 bg-[#0a0d14] border border-white/10 rounded-2xl p-2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all translate-y-2 group-hover:translate-y-0 shadow-2xl z-[60]">
-                      {item.children.map(child => (
-                        <Link 
-                          key={child.path} 
-                          to={child.path}
-                          className="flex items-center gap-3 w-full text-left px-5 py-3 text-[10px] font-black uppercase text-gray-300 hover:bg-white/5 rounded-xl transition-colors tracking-widest italic hover:text-[#eb1923]"
-                        >
-                          {child.icon} {child.name}
-                        </Link>
-                      ))}
+                    {/* Added pt-4 to bridge the gap so menu stays open */}
+                    <div className="absolute top-full left-0 pt-2 w-56 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all translate-y-2 group-hover:translate-y-0 z-[60]">
+                      <div className="bg-[#0a0d14] border border-white/10 rounded-2xl p-2 shadow-2xl">
+                        {item.children.map(child => (
+                          <Link 
+                            key={child.path} 
+                            to={child.path}
+                            className="flex items-center gap-3 w-full text-left px-5 py-3 text-[10px] font-black uppercase text-gray-300 hover:bg-white/5 rounded-xl transition-colors tracking-widest italic hover:text-[#eb1923]"
+                          >
+                            {child.icon} {child.name}
+                          </Link>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 ) : (
@@ -145,16 +149,18 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                       </div>
                     </Link>
                     
-                    <div className="absolute top-full right-0 mt-3 w-56 bg-[#0a0d14] border border-white/10 rounded-2xl p-2 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all translate-y-2 group-hover:translate-y-0 shadow-2xl z-[60]">
-                       <Link to="/profile" className="flex items-center gap-3 w-full text-left px-5 py-3 text-[10px] font-black uppercase text-gray-300 hover:bg-white/5 rounded-xl transition-colors tracking-widest italic mb-1">
-                         <Settings size={14} className="text-[#eb1923]" /> Dashboard
-                       </Link>
-                       <button 
-                        onClick={handleLogout}
-                        className="flex items-center gap-3 w-full text-left px-5 py-3 text-[10px] font-black uppercase text-[#eb1923] hover:bg-[#eb1923]/10 rounded-xl transition-colors tracking-widest italic"
-                       >
-                         <LogOut size={14} /> Disconnect
-                       </button>
+                    <div className="absolute top-full right-0 pt-2 w-56 opacity-0 group-hover:opacity-100 pointer-events-none group-hover:pointer-events-auto transition-all translate-y-2 group-hover:translate-y-0 z-[60]">
+                       <div className="bg-[#0a0d14] border border-white/10 rounded-2xl p-2 shadow-2xl">
+                         <Link to="/profile" className="flex items-center gap-3 w-full text-left px-5 py-3 text-[10px] font-black uppercase text-gray-300 hover:bg-white/5 rounded-xl transition-colors tracking-widest italic mb-1">
+                           <Settings size={14} className="text-[#eb1923]" /> Dashboard
+                         </Link>
+                         <button 
+                          onClick={handleLogout}
+                          className="flex items-center gap-3 w-full text-left px-5 py-3 text-[10px] font-black uppercase text-[#eb1923] hover:bg-[#eb1923]/10 rounded-xl transition-colors tracking-widest italic"
+                         >
+                           <LogOut size={14} /> Disconnect
+                         </button>
+                       </div>
                     </div>
                   </div>
                 </div>

@@ -158,7 +158,7 @@ const Endurance: React.FC = () => {
       goal: 'podium',
       eventDate: '2025-11-15T12:00',
       eventLength: 6,
-      availability: { 0: ['Admin_CNA'], 1: ['Admin_CNA', 'DriftKing'] }
+      availability: { 0: ['Admin_CNA'], 1: ['Admin_CNA', 'DriftKing'], 2: ['DriftKing'], 3: [], 4: ['SpeedyGonzales'], 5: ['SpeedyGonzales'] }
     },
     { 
       id: 't2', 
@@ -170,7 +170,7 @@ const Endurance: React.FC = () => {
       goal: 'fun',
       eventDate: '2025-12-05T18:00',
       eventLength: 4,
-      availability: {}
+      availability: { 0: ['ApexPredator'], 1: ['GhostRider'] }
     },
   ]);
 
@@ -262,6 +262,7 @@ const Endurance: React.FC = () => {
             <div className="mb-12 bg-neutral-900 border border-white/10 rounded-3xl p-8 shadow-2xl max-w-2xl mx-auto animate-in fade-in zoom-in-95">
               <h2 className="text-2xl font-bold mb-6 font-oswald uppercase italic">New Team Application</h2>
               <form onSubmit={handleCreateTeam} className="space-y-6">
+                {/* Form Content - Same as before */}
                 <div>
                   <label className="block text-[10px] font-black uppercase text-gray-500 mb-2 tracking-widest">Team Name</label>
                   <input 
@@ -356,96 +357,126 @@ const Endurance: React.FC = () => {
           )}
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teams.map(team => (
-              <div key={team.id} className="bg-[#0a0d14] border border-white/5 rounded-3xl overflow-hidden shadow-lg hover:border-red-600/30 transition-all group flex flex-col">
-                <div className="h-32 bg-neutral-900/50 relative flex items-center justify-center p-4 border-b border-white/5 group-hover:bg-neutral-800/50 transition-colors">
-                  <Car size={64} className="text-white/5 absolute transform -rotate-12 scale-125" />
-                  <div className="absolute top-4 left-4">
-                     {team.goal === 'podium' ? (
-                        <div className="flex items-center gap-1 bg-red-600/20 border border-red-600/30 px-2 py-1 rounded text-[9px] font-black text-red-500 uppercase tracking-widest">
-                           <Trophy size={10} /> Competitive
-                        </div>
-                     ) : (
-                        <div className="flex items-center gap-1 bg-blue-600/20 border border-blue-600/30 px-2 py-1 rounded text-[9px] font-black text-blue-500 uppercase tracking-widest">
-                           <Beer size={10} /> Just for Fun
-                        </div>
-                     )}
-                  </div>
-                  <div className="text-center relative z-10">
-                    <h3 className="text-xl font-bold text-white uppercase italic font-oswald tracking-tight">{team.name}</h3>
-                    <span className="text-[10px] text-red-500 font-black uppercase tracking-widest">{team.car}</span>
-                  </div>
-                </div>
-                <div className="p-6 flex-1 flex flex-col">
-                   <div className="flex justify-between items-start mb-6">
-                      <div className="space-y-1">
-                         <div className="flex items-center gap-2 text-gray-400 text-xs font-bold">
-                            <Calendar size={14} /> {new Date(team.eventDate).toLocaleDateString()}
-                         </div>
-                         <div className="flex items-center gap-2 text-gray-400 text-xs font-bold">
-                            <Clock size={14} /> {new Date(team.eventDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} ({team.eventLength}H)
-                         </div>
-                      </div>
-                      <div className="text-right">
-                         <span className="block text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Slots</span>
-                         <span className="text-lg font-oswald font-bold text-white">{team.members.length}/{team.maxSlots}</span>
-                      </div>
-                   </div>
-
-                  <div className="mb-8">
-                    {/* Avatar Stack */}
-                    <div className="flex items-center -space-x-3 overflow-hidden py-2 pl-1 mb-4">
-                       {team.members.map((member, i) => (
-                         <div key={i} className="relative group/avatar">
-                           <div className="w-10 h-10 rounded-full border-2 border-[#0a0d14] bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-gray-300 uppercase shadow-lg z-10 relative" title={member}>
-                             {member.substring(0, 2)}
-                           </div>
-                           {member === team.owner && (
-                              <div className="absolute -top-1 -right-1 z-20 bg-red-600 text-white p-0.5 rounded-full border border-[#0a0d14]">
-                                 <Zap size={8} />
-                              </div>
-                           )}
-                         </div>
-                       ))}
-                       {Array.from({ length: team.maxSlots - team.members.length }).map((_, i) => (
-                         <div key={`empty-${i}`} className="w-10 h-10 rounded-full border-2 border-[#0a0d14] border-dashed border-white/10 bg-transparent flex items-center justify-center text-[10px] text-gray-700">
-                           +
-                         </div>
-                       ))}
+            {teams.map(team => {
+              // Calculate coverage
+              const totalHours = team.eventLength;
+              const coveredHours = Object.values(team.availability).filter(drivers => drivers.length > 0).length;
+              const coveragePct = (coveredHours / totalHours) * 100;
+              
+              return (
+                <div key={team.id} className="bg-[#0a0d14] border border-white/5 rounded-3xl overflow-hidden shadow-lg hover:border-red-600/30 transition-all group flex flex-col">
+                  <div className="h-32 bg-neutral-900/50 relative flex items-center justify-center p-4 border-b border-white/5 group-hover:bg-neutral-800/50 transition-colors">
+                    <Car size={64} className="text-white/5 absolute transform -rotate-12 scale-125" />
+                    <div className="absolute top-4 left-4">
+                       {team.goal === 'podium' ? (
+                          <div className="flex items-center gap-1 bg-red-600/20 border border-red-600/30 px-2 py-1 rounded text-[9px] font-black text-red-500 uppercase tracking-widest">
+                             <Trophy size={10} /> Competitive
+                          </div>
+                       ) : (
+                          <div className="flex items-center gap-1 bg-blue-600/20 border border-blue-600/30 px-2 py-1 rounded text-[9px] font-black text-blue-500 uppercase tracking-widest">
+                             <Beer size={10} /> Just for Fun
+                          </div>
+                       )}
+                    </div>
+                    <div className="text-center relative z-10">
+                      <h3 className="text-xl font-bold text-white uppercase italic font-oswald tracking-tight">{team.name}</h3>
+                      <span className="text-[10px] text-red-500 font-black uppercase tracking-widest">{team.car}</span>
                     </div>
                   </div>
-                  
-                  <div className="mt-auto space-y-3">
-                    {team.members.includes(currentUser) && (
-                      <button 
-                         onClick={() => setManagingTeamId(team.id)}
-                         className="w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl text-xs uppercase tracking-widest border border-white/10 transition-colors flex items-center justify-center gap-2"
-                      >
-                         <Clock size={14} /> Manage Stints
-                      </button>
-                    )}
+                  <div className="p-6 flex-1 flex flex-col">
+                     <div className="flex justify-between items-start mb-4">
+                        <div className="space-y-1">
+                           <div className="flex items-center gap-2 text-gray-400 text-xs font-bold">
+                              <Calendar size={14} /> {new Date(team.eventDate).toLocaleDateString()}
+                           </div>
+                           <div className="flex items-center gap-2 text-gray-400 text-xs font-bold">
+                              <Clock size={14} /> {new Date(team.eventDate).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})} ({team.eventLength}H)
+                           </div>
+                        </div>
+                        <div className="text-right">
+                           <span className="block text-[10px] text-gray-500 font-black uppercase tracking-widest mb-1">Slots</span>
+                           <span className="text-lg font-oswald font-bold text-white">{team.members.length}/{team.maxSlots}</span>
+                        </div>
+                     </div>
+
+                    {/* Stint Coverage Visual */}
+                    <div className="mb-6">
+                      <div className="flex justify-between items-end mb-2">
+                        <span className="text-[9px] font-black text-gray-500 uppercase tracking-widest">Stint Coverage</span>
+                        <span className={`text-[10px] font-bold ${coveragePct === 100 ? 'text-green-500' : 'text-orange-500'}`}>
+                          {coveredHours} / {totalHours} Hrs
+                        </span>
+                      </div>
+                      <div className="flex gap-0.5 h-3 bg-neutral-900 rounded-sm overflow-hidden border border-white/5">
+                        {Array.from({ length: totalHours }).map((_, i) => {
+                          const isCovered = (team.availability[i] || []).length > 0;
+                          return (
+                            <div 
+                              key={i} 
+                              className={`flex-1 transition-colors ${isCovered ? 'bg-green-600' : 'bg-red-900/30'}`} 
+                              title={`Hour ${i+1}: ${isCovered ? 'Covered' : 'Open'}`} 
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="mb-8">
+                      {/* Avatar Stack */}
+                      <div className="flex items-center -space-x-3 overflow-hidden py-2 pl-1 mb-4">
+                         {team.members.map((member, i) => (
+                           <div key={i} className="relative group/avatar">
+                             <div className="w-10 h-10 rounded-full border-2 border-[#0a0d14] bg-neutral-800 flex items-center justify-center text-[10px] font-bold text-gray-300 uppercase shadow-lg z-10 relative" title={member}>
+                               {member.substring(0, 2)}
+                             </div>
+                             {member === team.owner && (
+                                <div className="absolute -top-1 -right-1 z-20 bg-red-600 text-white p-0.5 rounded-full border border-[#0a0d14]">
+                                   <Zap size={8} />
+                                </div>
+                             )}
+                           </div>
+                         ))}
+                         {Array.from({ length: team.maxSlots - team.members.length }).map((_, i) => (
+                           <div key={`empty-${i}`} className="w-10 h-10 rounded-full border-2 border-[#0a0d14] border-dashed border-white/10 bg-transparent flex items-center justify-center text-[10px] text-gray-700">
+                             +
+                           </div>
+                         ))}
+                      </div>
+                    </div>
                     
-                    <button 
-                      disabled={team.members.length >= team.maxSlots || team.members.includes(currentUser)}
-                      onClick={() => joinTeam(team.id)}
-                      className={`w-full py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-xs transition-all ${
-                        team.members.includes(currentUser) 
-                        ? 'bg-green-900/20 text-green-500 cursor-default border border-green-500/30' 
-                        : team.members.length >= team.maxSlots
-                          ? 'bg-neutral-900 text-red-900 cursor-not-allowed border border-white/5'
-                          : 'bg-white text-black hover:bg-red-600 hover:text-white shadow-lg'
-                      }`}
-                    >
-                      {team.members.includes(currentUser) ? <><CheckCircle size={14} className="inline mr-1" /> Registered</> : team.members.length >= team.maxSlots ? 'Full Grid' : 'Join Crew'}
-                    </button>
+                    <div className="mt-auto space-y-3">
+                      {team.members.includes(currentUser) && (
+                        <button 
+                           onClick={() => setManagingTeamId(team.id)}
+                           className="w-full py-3 bg-neutral-800 hover:bg-neutral-700 text-white font-bold rounded-xl text-xs uppercase tracking-widest border border-white/10 transition-colors flex items-center justify-center gap-2"
+                        >
+                           <Clock size={14} /> Manage Stints
+                        </button>
+                      )}
+                      
+                      <button 
+                        disabled={team.members.length >= team.maxSlots || team.members.includes(currentUser)}
+                        onClick={() => joinTeam(team.id)}
+                        className={`w-full py-4 rounded-xl font-bold uppercase tracking-[0.2em] text-xs transition-all ${
+                          team.members.includes(currentUser) 
+                          ? 'bg-green-900/20 text-green-500 cursor-default border border-green-500/30' 
+                          : team.members.length >= team.maxSlots
+                            ? 'bg-neutral-900 text-red-900 cursor-not-allowed border border-white/5'
+                            : 'bg-white text-black hover:bg-red-600 hover:text-white shadow-lg'
+                        }`}
+                      >
+                        {team.members.includes(currentUser) ? <><CheckCircle size={14} className="inline mr-1" /> Registered</> : team.members.length >= team.maxSlots ? 'Full Grid' : 'Join Crew'}
+                      </button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       ) : (
         <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+          {/* Mock results same as before */}
           {MOCK_ENDURANCE_RESULTS.map((event, idx) => (
              <div key={idx} className="bg-[#0a0d14] border border-white/5 rounded-3xl p-8 relative overflow-hidden group hover:border-red-600/30 transition-all">
                 <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:rotate-12 transition-transform">
